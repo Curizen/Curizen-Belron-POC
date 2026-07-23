@@ -148,12 +148,18 @@ p{margin:0}
   letter-spacing:.06em;padding-top:12px;
   border-top:2px solid var(--blue);
 }
-.sec-head h2{font-size:clamp(28px,3.3vw,42px);letter-spacing:-.036em;line-height:1.12;margin-bottom:12px;max-width:20ch}
+.sec-head h2{font-size:clamp(28px,3.3vw,42px);letter-spacing:-.036em;line-height:1.12;margin-bottom:16px;max-width:20ch}
 .sec-sub{font-size:17px;line-height:1.68;color:var(--slate);max-width:76ch;letter-spacing:-.008em}
+.sec-sub + .sec-sub{margin-top:12px}
 .sec-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
 
 /* content column */
-.body-in{margin-left:120px}
+.body-in{
+    margin-left:120px;
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+}
 @media(max-width:1000px){.body-in{margin-left:0}}
 
 /* ---------- 6. TYPOGRAPHY ---------- */
@@ -164,7 +170,9 @@ p{margin:0}
 }
 .sub::before{content:"";width:5px;height:5px;border-radius:99px;background:var(--blue);flex-shrink:0}
 .sub:first-child{margin-top:0}
-.lead{font-size:17.5px;line-height:1.7;color:var(--slate);max-width:80ch;letter-spacing:-.01em;margin-bottom:16px}
+.lead{font-size:17.5px;line-height:1.7;color:var(--slate);max-width:80ch;letter-spacing:-.01em;margin-bottom:8px}
+/* body-in's flex gap already contributes 16px; net with the container gap: 24px to the next block, 12px between two leads */
+.lead:has(+ .lead){margin-bottom:-4px}
 .note{
   font-size:14px;line-height:1.66;color:var(--slate);max-width:82ch;
   margin-top:12px;padding-left:16px;border-left:2px solid var(--grey);
@@ -596,7 +604,7 @@ footer{background:var(--white);border-top:1px solid var(--line-2);padding:0 40px
     <div>
       <h2>Target architecture &amp; data flows</h2>
       <p class="sec-sub">The platform separates two planes: a control plane where configuration is defined and stored, and a runtime plane where conversations are processed.</p>
-      <p class="sec-sub" style="margin-top:12px">For the Germany POC, hosting region, encryption boundaries and data residency are agreed with you up front, and the deployment operates only within those approved regions.</p>
+      <p class="sec-sub">For the Germany POC, hosting region, encryption boundaries and data residency are agreed with you up front, and the deployment operates only within those approved regions.</p>
     </div>
   </div>
 
@@ -604,99 +612,10 @@ footer{background:var(--white);border-top:1px solid var(--line-2);padding:0 40px
     <p class="lead">The platform controls agent configuration. It does not run the agent.</p>
     <p class="lead">Once configuration is complete, a runtime instance is started that pulls its settings from the platform database, compiles its own copy of the system prompt, and from then on runs independently, with capacity added automatically as load increases.</p>
 
-    <div class="diagram">
-      <div class="arch">
-        <!-- runtime path -->
-        <div>
-          <div class="plane-label" style="color:#0072c2"><i style="background:var(--blue)"></i>Channels: request in<span class="hint">one gateway for every channel</span></div>
-          <div class="row c5">
-            <div class="node ch center">Phone</div>
-            <div class="node ch center">WhatsApp</div>
-            <div class="node ch center">Web chat</div>
-            <div class="node ch center">Email</div>
-            <div class="node ch center">API</div>
-          </div>
-          <div class="lockrow"><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Encrypted in transit</span></div>
-          <div class="down">↓</div>
-          <div class="node ch center" style="background:var(--blue-tint)"><b>Channel Gateway</b><small>Single controlled entry / exit point</small></div>
-          <div class="lockrow"><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Encrypted in transit</span></div>
-          <div class="down">↓</div>
-
-          <div class="plane-label" style="color:var(--pine);margin-top:8px"><i style="background:var(--pine)"></i>Runtime plane<span class="hint">identical replicas of one published version</span></div>
-          <div class="row c3">
-            <div class="node rt center"><b>Instance · Server 1</b><small>Compiled prompt copy</small></div>
-            <div class="node rt center" style="border-style:dashed;background:var(--pine-tint)"><b>Instance · Server 2</b><small>Auto-scaled on load</small></div>
-            <div class="node rt center" style="opacity:.55;border-style:dotted"><b>Instance · Server N</b><small>On demand</small></div>
-          </div>
-          <div class="lockrow"><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Encrypted in transit</span></div>
-          <div class="down">↓</div>
-          <div class="row c3">
-            <div class="node ai center"><b>Amazon Bedrock</b><small>Language model</small></div>
-            <div class="node kn center"><b>Knowledge retrieval</b><small>Customer's own database</small></div>
-            <div class="node ch center"><b>Tool execution</b><small>CRM · backend · external</small></div>
-          </div>
-          <div class="down">↓</div>
-          <div class="node accent center">Response to the customer, on the same channel and in the same session</div>
-        </div>
-
-        <!-- control plane -->
-        <div>
-          <div class="plane-label" style="color:var(--ink)"><i style="background:var(--ink)"></i>Control plane</div>
-          <div class="arch-side">
-            <div style="font-family:var(--mono);font-size:12.8px;font-weight:600;color:var(--ink);letter-spacing:.04em">Curizen Platform Console</div>
-            <div class="chiplist">
-              <span>Identity &amp; Config</span>
-              <span>Prompt Studio</span>
-              <span>Knowledge</span>
-              <span>Tools &amp; Integrations</span>
-              <span>Channels</span>
-              <span>Model &amp; Voice Providers</span>
-              <span>Versions &amp; Testing</span>
-              <span>Roles &amp; Permissions</span>
-            </div>
-            <div class="down"><em>saved on every change</em></div>
-            <div class="dblock">
-              <div class="dt">Curizen Platform Database</div>
-              <div class="dc">
-                <span>Agent definition</span><span>System prompt source</span><span>Tool permissions</span><span>Channel settings</span><span>Provider selection</span><span>Security policies</span>
-              </div>
-            </div>
-          </div>
-          <div class="down"><em>read once, at instance start</em></div>
-          <div class="node center" style="border-style:dashed"><small>The control plane is never on the conversation path. A running instance reads configuration at start-up and compiles its own prompt copy. It does not call back into the console per request.</small></div>
-
-          <div class="dblock kn" style="margin-top:12px">
-            <div class="dt">Customer Knowledge Database</div>
-            <div class="dc"><span>Documents</span><span>Embeddings</span><span>Vector index</span><span>Retrieval config</span></div>
-          </div>
-          <p class="note">Knowledge is deliberately kept out of the Curizen platform database and on infrastructure Carglass controls.</p>
-        </div>
-      </div>
-      <div class="diagram-cap">Fig. 1. Control plane and runtime plane · every hop encrypted in transit </div>
-    </div>
+    <img src="1.jpeg" alt="AI agent platform architecture: control plane and runtime plane" style="width:100%;height:auto;display:block;margin:0 auto">
 
     <h3 class="sub">Two flows, always running in parallel</h3>
-    <div class="diagram">
-      <div class="flow-label">Runtime flow: a customer request</div>
-      <div class="ribbon">
-        <span class="st">Customer</span><span class="ar">→</span>
-        <span class="st">Channel</span><span class="ar">→</span>
-        <span class="st">Gateway</span><span class="ar">→</span>
-        <span class="st hi">Agent instance</span><span class="ar">→</span>
-        <span class="st">Bedrock + knowledge + tools</span><span class="ar">→</span>
-        <span class="st">Response</span>
-      </div>
-      <div class="flow-label" style="margin-top:16px">Control-plane flow: configuration to a running agent</div>
-      <div class="ribbon">
-        <span class="st">Admin</span><span class="ar">→</span>
-        <span class="st">Console</span><span class="ar">→</span>
-        <span class="st hi">Platform database</span><span class="ar">→</span>
-        <span class="st">Start instance</span><span class="ar">→</span>
-        <span class="st">Compiled prompt saved</span><span class="ar">→</span>
-        <span class="st">Scale-out as needed</span>
-      </div>
-      <div class="diagram-cap">Fig. 2. The conversation flow never touches the control plane; the configuration flow never touches a live conversation</div>
-    </div>
+    <img src="2.png" alt="Two flows running in parallel: runtime request flow and control-plane configuration flow" style="width:100%;height:auto;display:block;margin:0 auto">
 
     <h3 class="sub">Where each class of data lives</h3>
     <div class="tablewrap"><div class="tablescroll">
@@ -723,7 +642,7 @@ footer{background:var(--white);border-top:1px solid var(--line-2);padding:0 40px
     <div>
       <h2>Product layer vs. custom build</h2>
       <p class="sec-sub">This section sets out how much of the agent Carglass can change independently after the POC.</p>
-      <p class="sec-sub" style="margin-top:12px">The scope is the console surface: sixteen configuration areas, all self-service and all versioned. What sits outside it is a short and specific list.</p>
+      <p class="sec-sub">The scope is the console surface: sixteen configuration areas, all self-service and all versioned. What sits outside it is a short and specific list.</p>
     </div>
   </div>
 
@@ -943,31 +862,7 @@ footer{background:var(--white);border-top:1px solid var(--line-2);padding:0 40px
 
   <div class="body-in">
     <h3 class="sub">Release management &amp; version lifecycle</h3>
-    <div class="diagram">
-      <div style="max-width:440px;margin:0 auto">
-        <div class="node ctl center"><b>Configuration changed</b><small>Prompt · knowledge · tools · channels · model · security rules</small></div>
-        <div class="down">↓</div>
-        <div class="node center"><b>Testing &amp; validation</b><small>Playground · trace review · comparison against current version</small></div>
-        <div class="down">↓</div>
-        <div class="node accent center"><b>New version published</b><small style="color:#0072c2;opacity:.75">Immutable snapshot</small></div>
-      </div>
-      <div style="text-align:center;font-size:14.4px;color:var(--muted);margin:24px 0 14px">What happens next depends on whether a conversation is new or already in progress</div>
-      <div class="fork">
-        <div>
-          <div class="fl">New conversation</div>
-          <div class="node accent center">Starts on the new version</div>
-          <div class="down">↓</div>
-          <div class="node center">Runs to completion on it</div>
-        </div>
-        <div>
-          <div class="fl">Conversation already in progress</div>
-          <div class="node rt center" style="background:var(--pine-tint)">Continues on its original version</div>
-          <div class="down">↓</div>
-          <div class="node center">Session completes unaffected</div>
-        </div>
-      </div>
-      <div class="diagram-cap">Fig. 6. Publishing a change never disrupts a customer mid-conversation</div>
-    </div>
+    <img src="3.jpeg" alt="Release management and version lifecycle: edit, save, test, publish, rollback" style="width:100%;height:auto;display:block;margin:0 auto">
 
     <div class="cards" style="margin-top:12px">
       <div class="card acc-blue"><h4>Automatic rollback</h4><ul><li>Triggered by operational metrics such as error rate, latency and failed tool calls, without waiting for a person to notice.</li></ul></div>
