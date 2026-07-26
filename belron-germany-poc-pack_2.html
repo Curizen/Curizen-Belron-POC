@@ -612,10 +612,10 @@ footer{background:var(--white);border-top:1px solid var(--line-2);padding:0 40px
     <p class="lead">The platform controls agent configuration. It does not run the agent.</p>
     <p class="lead">Once configuration is complete, a runtime instance is started that pulls its settings from the platform database, compiles its own copy of the system prompt, and from then on runs independently, with capacity added automatically as load increases.</p>
 
-    <img src="1.jpeg" alt="AI agent platform architecture: control plane and runtime plane" style="width:100%;height:auto;display:block;margin:0 auto">
+    <img src="public/diagram1.png" alt="AI agent platform architecture: control plane and runtime plane" style="width:100%;height:auto;display:block;margin:0 auto">
 
     <h3 class="sub">Two flows, always running in parallel</h3>
-    <img src="2.png" alt="Two flows running in parallel: runtime request flow and control-plane configuration flow" style="width:100%;height:auto;display:block;margin:0 auto">
+    <img src="public/diagram2.png" alt="Two flows running in parallel: runtime request flow and control-plane configuration flow" style="width:100%;height:auto;display:block;margin:0 auto">
 
     <h3 class="sub">Where each class of data lives</h3>
     <div class="tablewrap"><div class="tablescroll">
@@ -862,7 +862,7 @@ footer{background:var(--white);border-top:1px solid var(--line-2);padding:0 40px
 
   <div class="body-in">
     <h3 class="sub">Release management &amp; version lifecycle</h3>
-    <img src="3.jpeg" alt="Release management and version lifecycle: edit, save, test, publish, rollback" style="width:100%;height:auto;display:block;margin:0 auto">
+    <img src="public/Diagram3.png" alt="Release management and version lifecycle: edit, save, test, publish, rollback" style="width:65%;height:auto;display:block;margin:0 auto">
 
     <div class="cards" style="margin-top:12px">
       <div class="card acc-blue"><h4>Automatic rollback</h4><ul><li>Triggered by operational metrics such as error rate, latency and failed tool calls, without waiting for a person to notice.</li></ul></div>
